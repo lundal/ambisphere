@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Ambisphere</title>
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+        <script>
+            var id = "@id";
+
+            var state = {};
+            var scenes = [];
+            var stack = [];
+
+            function setScenes(newScenes) {
+                var e = $('body');
+
+                // Find ids
+                var currentSceneIds = scenes.map(function(scene) {
+                    return scene.id;
+                });
+                var newSceneIds = scenes.map(function(scene) {
+                    return scene.id;
+                });
+
+                // Compute changes
+                var unchangedSceneIds = [];
+                newScenes.forEach(function(scene) {
+                    for (var i = 0; i < currentSceneIds.length; i++) {
+                        if (scene.id == currentSceneIds[i] && equals(scene, findScene(currentSceneIds[i]))) {
+                            unchangedSceneIds.push(scene.id);
+                            return;
+                        }
+                    }
+                });
+                var changedSceneIds = difference(currentSceneIds, unchangedSceneIds);
+                var removedSceneIds = difference(newSceneIds, currentSceneIds);
+
+                // Remove old and changed
+                changedSceneIds.forEach(function(id) {
+                    $('#'+id).remove();
+                });
+                removedSceneIds.forEach(function(id) {
+                    $('#'+id).remove();
+                });
+
+                // Add new and changed
+                newScenes.forEach(function(scene) {
+                    for (var i = 0; i < unchangedSceneIds.length; i++) {
+                        if (scene.id == unchangedSceneIds[i]) {
+                            return;
+                        }
+                    }
+                    var content = '';
+                    if (scene.embed) {
+                        content += '<iframe src="' + scene.embed + '"></iframe>';
+                    }
+                    if (scene.audio) {
+                        var loop = scene.loop ? 'loop' : '';
+                        content += '<audio src="' + scene.audio + '" preload="auto" ' + loop + '></audio>';
+                    }
+                    e.append('<div id="' + scene.id + '" style="background-color: ' + scene.color + '; background-image: url(\'' + scene.image + '\'); background-size: ' + scene.size + '">' + content + '</div>');
+                });
+
+                scenes = newScenes;
+
+                // Reload changed scenes
+                var originalStack = stack.slice();
+                stack = difference(stack, changedSceneIds);
+                setStack(originalStack);
+            }
+
+            function findScene(id) {
+                for (var i = 0; i < scenes.length; i++) {
+                    if (scenes[i].id == id) {
+                        return scenes[i];
+                    }
+                }
+                return null;
+            }
+
+            function setStack(newStack) {
+                // Reorder
+                for (var i = 0; i < newStack.length; i++) {
+                    var id = newStack[i];
+                    var e = $('#'+id);
+                    e.css('z-index', 2*i+1);
+                }
+
+                var fadeout = difference(stack, newStack);
+
+                for (var i = 0; i < fadeout.length; i++) {
+                    var id = fadeout[i];
+                    var scene = findScene(id);
+                    var e = $('#'+id);
+                    e.css('z-index', e.css('z-index')-1);
+                    e.animate({opacity: 0}, scene.fadeout);
+                    var a = e.find('audio');
+                    a.animate({volume: 0}, scene.fadeout);
+                    console.log('fading out ' + id)
+                }
+
+                var fadein = difference(newStack, stack);
+
+                for (var i = 0; i < fadein.length; i++) {
+                    var id = fadein[i];
+                    var scene = findScene(id);
+                    var e = $('#'+id);
+                    e.animate({opacity: 1}, scene.fadein)
+                    var a = e.find('audio');
+                    a.prop('volume', 0);
+                    a.prop('currentTime', 0);
+                    a.animate({volume: (scene.volume / 100)}, scene.fadein);
+                    a.trigger('play');
+                    console.log('fading in ' + id)
+                }
+
+                stack = newStack;
+            }
+
+            function difference(x, y) {
+                var ret = [];
+                for (var i = 0; i < x.length; i++) {
+                    var found = false;
+                    for (var j = 0; j < y.length; j++) {
+                        if (x[i] == y[j]) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        ret.push(x[i])
+                    }
+                }
+                return ret;
+            }
+
+            function equals(x, y) {
+                return JSON.stringify(x) === JSON.stringify(y);
+            }
+
+            function pollState() {
+                $.post('../api/state/' + id, JSON.stringify(state), function(data) {
+                    state = data;
+                    setScenes(data.scenes);
+                    setStack(data.stack);
+                    setTimeout(pollState, 100);
+                }, 'json')
+                .fail(function() {
+                    setTimeout(pollState, 3000);
+                });
+            }
+
+            $('document').ready(function() {
+                pollState();
+            });
+        </script>
+        <style>
+            body {
+                background-color: black;
+            }
+            div {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                opacity: 0;
+                background-repeat: no-repeat;
+                background-position: center;
+                z-index: 0;
+            }
+            iframe {
+                width: 100%;
+                height: 100%;
+            }
+        </style>
+    </head>
+    <body>
+    </body>
+</html>

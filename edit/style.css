@@ -1,0 +1,128 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    border: none;
+}
+body {
+    background: hsla(0, 0%, 20%, 1.0);
+    color: hsla(0, 0%, 100%, 0.90);
+    font-family: Arial, Helvetica;
+    font-size: 15px;
+}
+nav {
+    background: hsla(0, 0%, 0%, 0.5);
+}
+nav button {
+    padding: 10px;
+    background: hsla(0, 0%, 0%, 0.0);
+    color: hsla(0, 0%, 100%, 0.90);
+}
+nav button:hover {
+    background: hsla(0, 0%, 0%, 0.5);
+    color: hsla(0, 0%, 100%, 1.0);
+}
+figure {
+    display: inline-block;
+    border: 1px solid hsla(0, 0%, 100%, 0.25);
+    margin: 10px;
+    cursor: pointer;
+}
+figure:hover {
+    border: 1px solid hsla(0, 0%, 100%, 0.35);
+}
+figcaption {
+    background: hsla(0, 0%, 0%, 0.15);
+    border-top: 1px solid hsla(0, 0%, 100%, 0.25);
+    text-align: center;
+    padding: 3px;
+    width: 160px;
+    height: 25px;
+    overflow: hidden;
+}
+button {
+    cursor: pointer;
+}
+.thumbnail {
+    width: 160px;
+    height: 90px;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: relative;
+}
+.presenter .scenes {
+    margin-bottom: 138px;
+}
+.editor .scenes {
+    margin-bottom: 222px;
+}
+.edit,
+.stack {
+    background: hsla(0, 0%, 15%, 1.0);
+    border-top: 1px solid hsla(0, 0%, 100%, 0.25);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+.overlay {
+    text-align: center;
+    background: hsla(0, 0%, 0%, 0.25);
+    color: hsla(0, 0%, 100%, 0.90);
+    width: 20px;
+    height: 20px;
+    margin: 3px;
+    font-size: 15px;
+}
+.overlay:hover {
+    background: hsla(0, 0%, 0%, 0.5);
+    color: hsla(0, 0%, 100%, 1.0);
+}
+.topleft {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.topright {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+.bottomleft {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+.bottomright {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+.hidden {
+    display: none;
+}
+.edit table {
+    width: 100%;
+    margin: 10px;
+}
+.edit input {
+    width: 100%;
+    padding: 2px 5px;
+    background: hsla(0, 0%, 0%, 0.2);
+    color: hsla(0, 0%, 100%, 0.90);
+    font-size: 15px;
+}
+.edit input:hover,
+.edit input:active {
+    background: hsla(0, 0%, 0%, 0.5);
+    color: hsla(0, 0%, 100%, 1.0);
+}
+.edit th,
+.edit td {
+    text-align: left;
+    padding: 2px 5px;
+}
+.editor .scenes > button {
+    vertical-align: top;
+    margin: 10px;
+}
