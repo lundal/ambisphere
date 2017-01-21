@@ -21,6 +21,10 @@ func getIndex(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 func getNew(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	id := randString(20)
+	if hasState(id) {
+		http.Error(w, "id exists", http.StatusInternalServerError)
+		return
+	}
 	saveState(id, `{"scenes":[],"stack":[]}`)
 	http.Redirect(w, r, "/edit/"+id, http.StatusFound)
 }
@@ -47,10 +51,10 @@ func putState(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	body, _ := ioutil.ReadAll(r.Body)
 	err := saveState(id, string(body))
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-	} else {
-		fmt.Fprint(w, "OK")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
+	fmt.Fprint(w, "OK")
 }
 
 func pollState(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
