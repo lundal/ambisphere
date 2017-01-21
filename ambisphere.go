@@ -1,10 +1,12 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -110,7 +112,14 @@ func loadView() string {
 }
 
 func main() {
-	initDb("./ambisphere.db")
+	var port int
+	var db string
+
+	flag.IntVar(&port, "port", 4800, "Port to serve webinterface on")
+	flag.StringVar(&db, "db", "ambisphere.db", "Database file")
+	flag.Parse()
+
+	initDb(db)
 
 	router := httprouter.New()
 
@@ -123,5 +132,5 @@ func main() {
 	router.PUT("/api/state/:id", validateID(limitBody(putState)))
 	router.POST("/api/state/:id", validateID(limitBody(pollState)))
 
-	log.Fatal(http.ListenAndServe(":4800", router))
+	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(port), router))
 }
