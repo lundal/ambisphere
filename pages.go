@@ -2,6 +2,8 @@ package main
 
 import "strings"
 
+//go:generate go-bindata -prefix assets assets
+
 var index = ""
 var edit = ""
 var view = ""
