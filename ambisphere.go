@@ -110,6 +110,8 @@ func loadView() string {
 }
 
 func main() {
+	initDb("./ambisphere.db")
+
 	router := httprouter.New()
 
 	router.GET("/new/", getNew)
