@@ -15,8 +15,9 @@ import (
 
 //go:generate go-bindata -prefix assets assets
 
-var edit = ""
-var view = ""
+func getIndex(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	w.Write([]byte(index))
+}
 
 func getNew(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	id := randString(20)
@@ -92,28 +93,6 @@ func limitBody(handler httprouter.Handle) httprouter.Handle {
 	}
 }
 
-func init() {
-	edit = loadEdit()
-	view = loadView()
-}
-
-func loadEdit() string {
-	html := string(MustAsset("edit.html"))
-	css := string(MustAsset("edit.css"))
-	js := string(MustAsset("edit.js"))
-
-	html = strings.Replace(html, "@css", css, -1)
-	html = strings.Replace(html, "@js", js, -1)
-
-	return html
-}
-
-func loadView() string {
-	html := string(MustAsset("view.html"))
-
-	return html
-}
-
 func main() {
 	var port int
 	var db string
@@ -126,6 +105,7 @@ func main() {
 
 	router := httprouter.New()
 
+	router.GET("/", getIndex)
 	router.GET("/new/", getNew)
 
 	router.GET("/view/:id", validateID(getView))
