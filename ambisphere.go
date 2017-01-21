@@ -44,9 +44,12 @@ func putState(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	id := p.ByName("id")
 
 	body, _ := ioutil.ReadAll(r.Body)
-	saveState(id, string(body))
-
-	fmt.Fprint(w, "OK")
+	err := saveState(id, string(body))
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+	} else {
+		fmt.Fprint(w, "OK")
+	}
 }
 
 func pollState(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
