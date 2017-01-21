@@ -11,8 +11,10 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-//go:generate go run scripts/pack.go edit/ edit.html edit
-//go:generate go run scripts/pack.go view/ view.html view
+//go:generate go-bindata -prefix assets assets
+
+var edit = ""
+var view = ""
 
 func getNew(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	id := randString(20)
@@ -83,6 +85,28 @@ func limitBody(handler httprouter.Handle) httprouter.Handle {
 		}
 		handler(w, r, p)
 	}
+}
+
+func init() {
+	edit = loadEdit()
+	view = loadView()
+}
+
+func loadEdit() string {
+	html := string(MustAsset("edit.html"))
+	css := string(MustAsset("edit.css"))
+	js := string(MustAsset("edit.js"))
+
+	html = strings.Replace(html, "@css", css, -1)
+	html = strings.Replace(html, "@js", js, -1)
+
+	return html
+}
+
+func loadView() string {
+	html := string(MustAsset("view.html"))
+
+	return html
 }
 
 func main() {
