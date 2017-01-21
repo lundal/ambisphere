@@ -21,6 +21,11 @@ func initDb(file string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	_, err = db.Exec("PRAGMA journal_mode=WAL")
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func hasState(id string) bool {
