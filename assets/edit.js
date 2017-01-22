@@ -1,9 +1,6 @@
 var state = {
     id: '@id',
-    scenes: [
-        {id: 'a', title: 'Hello World', color: '', image: 'http://wallpaper-gallery.net/images/awesome-images/awesome-images-11.jpg', size: 'cover', embed: '', audio: '', volume: 100, loop: 'false', fadein: 1000, fadeout: 1000},
-        {id: 'b', title: 'Bliss', color: 'black', image: 'http://wallpaper-gallery.net/images/awesome-images/awesome-images-1.jpg', size: 'contain', embed: '', audio: '', volume: 100, loop: 'true', fadein: 200, fadeout: 200},
-    ],
+    scenes: [],
     stack: [],
     editScene: null,
     editVisible: false,
