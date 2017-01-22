@@ -46,7 +46,7 @@ var Scenes = React.createClass({
         scenes: React.PropTypes.array.isRequired
     },
     newScene: function() {
-        state.scenes.push({id: guid(), title: '', color: '', image: '', size: 'cover', embed: '', audio: '', volume: 100, loop: 'false', fadein: 0, fadeout: 0});
+        state.scenes.push({id: guid(), title: '', color: '', image: '', size: 'cover', embed: '', audio: '', volume: 100, loop: 'false', fadein: 1000, fadeout: 1000});
         stateUpdated();
     },
     render: function() {
