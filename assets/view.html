@@ -11,29 +11,45 @@
 		var scenes = [];
 		var stack = [];
 
+		var verbose = false;
+
 		function setScenes(newScenes) {
 			var e = $('body');
+
+			if (verbose) console.log('Scenes:');
+			if (verbose) console.log(scenes);
+			if (verbose) console.log('NewScenes:');
+			if (verbose) console.log(newScenes);
 
 			// Find ids
 			var currentSceneIds = scenes.map(function(scene) {
 				return scene.id;
 			});
-			var newSceneIds = scenes.map(function(scene) {
+			var newSceneIds = newScenes.map(function(scene) {
 				return scene.id;
 			});
 
 			// Compute changes
 			var unchangedSceneIds = [];
-			newScenes.forEach(function(scene) {
-				for (var i = 0; i < currentSceneIds.length; i++) {
-					if (scene.id == currentSceneIds[i] && equals(scene, findScene(currentSceneIds[i]))) {
-						unchangedSceneIds.push(scene.id);
+			var changedSceneIds = [];
+			newScenes.forEach(function(newScene) {
+				for (var i = 0; i < scenes.length; i++) {
+					if (equals(newScene, scenes[i])) {
+						unchangedSceneIds.push(newScene.id);
+						return;
+					} else if (newScene.id == scenes[i].id) {
+						changedSceneIds.push(newScene.id);
 						return;
 					}
 				}
 			});
-			var changedSceneIds = difference(currentSceneIds, unchangedSceneIds);
-			var removedSceneIds = difference(newSceneIds, currentSceneIds);
+			var removedSceneIds = difference(currentSceneIds, newSceneIds);
+
+			if (verbose) console.log('current: ' + currentSceneIds);
+			if (verbose) console.log('new: ' + newSceneIds);
+			if (verbose) console.log('unchanged: ' + unchangedSceneIds);
+			if (verbose) console.log('changed: ' + changedSceneIds);
+			if (verbose) console.log('removed: ' + removedSceneIds);
 
 			// Remove old and changed
 			changedSceneIds.forEach(function(id) {
@@ -63,10 +79,9 @@
 
 			scenes = newScenes;
 
-			// Reload changed scenes
+			// Drop changed scenes from stack
 			var originalStack = stack.slice();
-			stack = difference(stack, changedSceneIds);
-			setStack(originalStack);
+			stack = difference(difference(stack, changedSceneIds), removedSceneIds);
 		}
 
 		function findScene(id) {
@@ -91,18 +106,22 @@
 			for (var i = 0; i < fadeout.length; i++) {
 				var id = fadeout[i];
 				var scene = findScene(id);
+
+				if (verbose) console.log('fading out ' + id)
+
 				var e = $('#'+id);
 				e.css('z-index', e.css('z-index')-1);
 				e.animate({opacity: 0}, scene.fadeout);
+
 				var f = e.find('iframe');
 				if (f && scene.loaded == 'visible') {
 					f.attr('src', '');
 				}
+
 				var a = e.find('audio');
 				if (a) {
 					a.animate({volume: 0}, scene.fadeout);
 				}
-				console.log('fading out ' + id)
 			}
 
 			var fadein = difference(newStack, stack);
@@ -110,12 +129,17 @@
 			for (var i = 0; i < fadein.length; i++) {
 				var id = fadein[i];
 				var scene = findScene(id);
+
+				if (verbose) console.log('fading in ' + id)
+
 				var e = $('#'+id);
 				e.animate({opacity: 1}, scene.fadein)
+
 				var f = e.find('iframe');
 				if (f && scene.loaded == 'visible') {
 					f.attr('src', f.attr('xsrc'));
 				}
+
 				var a = e.find('audio');
 				if (a) {
 					a.prop('volume', 0);
@@ -123,7 +147,6 @@
 					a.animate({volume: (scene.volume / 100)}, scene.fadein);
 					a.trigger('play');
 				}
-				console.log('fading in ' + id)
 			}
 
 			stack = newStack;
@@ -153,6 +176,8 @@
 		function pollState() {
 			$.post('../api/state/' + id, JSON.stringify(state), function(data) {
 				state = data;
+				if (verbose) console.log('Data:');
+				if (verbose) console.log(data);
 				setScenes(data.scenes);
 				setStack(data.stack);
 				setTimeout(pollState, 100);
