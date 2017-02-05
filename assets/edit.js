@@ -30,12 +30,18 @@ var App = React.createClass({
 		}
 		return stackScenes;
 	},
+	openView: function() {
+		window.open('../view/' + state.id);
+	},
 	render: function() {
 		return (
 			React.createElement('div', {},
 				React.createElement(Scenes, {scenes: this.props.state.scenes}),
 				React.createElement(Stack, {scenes: this.stackScenes()}),
-				React.createElement(EditScene, {scene: this.sceneById(this.props.state.editScene), visible: this.props.state.editVisible})
+				React.createElement(EditScene, {scene: this.sceneById(this.props.state.editScene), visible: this.props.state.editVisible}),
+				React.createElement('button', {className: 'circle orange view', onClick: this.openView},
+					React.createElement('i', {className: 'fa fa-photo'})
+				)
 			)
 		)
 	}
@@ -46,7 +52,7 @@ var Scenes = React.createClass({
 		scenes: React.PropTypes.array.isRequired
 	},
 	newScene: function() {
-		state.scenes.push({id: guid(), title: '', color: '', image: '', size: 'cover', embed: '', audio: '', volume: 100, loop: 'false', fadein: 1000, fadeout: 1000});
+		state.scenes.push({id: guid(), title: '', color: '', image: '', size: 'cover', embed: '', loaded: 'visible', audio: '', volume: 100, loop: 'false', fadein: 1000, fadeout: 1000});
 		stateUpdated();
 	},
 	render: function() {
@@ -212,6 +218,10 @@ var EditScene = React.createClass({
 		{value: 'cover', desc: 'Cover'},
 		{value: 'contain', desc: 'Contain'},
 	],
+	loadOptions: [
+		{value: 'visible', desc: 'Visible'},
+		{value: 'always', desc: 'Always'},
+	],
 	loopOptions: [
 		{value: 'true', desc: 'Yes'},
 		{value: 'false', desc: 'No'},
@@ -229,6 +239,7 @@ var EditScene = React.createClass({
 						React.createElement('label', {className: 'half'}, 'Background', React.createElement(TextBox, {length: 50, value: scene.color, onChange: this.modifySceneProp('color'), placeholder: 'Name / HEX / RGBA / HSLA'})),
 						React.createElement('label', {className: 'half'}, 'Size', React.createElement(SelectBox, {options: this.sizeOptions, value: scene.size, onChange: this.modifySceneProp('size')})),
 						React.createElement('label', {}, 'Embed', React.createElement(TextBox, {length: 300, value: scene.embed, onChange: this.modifySceneProp('embed'), placeholder: 'URL'})),
+						React.createElement('label', {className: 'half'}, 'Loaded', React.createElement(SelectBox, {options: this.loadOptions, value: scene.loaded, onChange: this.modifySceneProp('loaded')})),
 						React.createElement('label', {}, 'Audio', React.createElement(TextBox, {length: 300, value: scene.audio, onChange: this.modifySceneProp('audio'), placeholder: 'URL'})),
 						React.createElement('label', {className: 'half'}, 'Volume', React.createElement(NumberBox, {max: 100, value: scene.volume, onChange: this.modifySceneProp('volume'), placeholder: '%'})),
 						React.createElement('label', {className: 'half'}, 'Repeat', React.createElement(SelectBox, {options: this.loopOptions, value: scene.loop, onChange: this.modifySceneProp('loop')})),

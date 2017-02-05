@@ -75,6 +75,11 @@
 	padding: 4px;
 	padding-bottom: 0; /* Fix for weird sizing bug */
 }
+.view {
+	position: absolute;
+	bottom: 8px;
+	right: 8px;
+}
 .edit {
 	width: 648px;
 }

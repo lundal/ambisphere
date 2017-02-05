@@ -52,7 +52,7 @@
 				}
 				var content = '';
 				if (scene.embed) {
-					content += '<iframe src="' + scene.embed + '"></iframe>';
+					content += '<iframe src="' + (scene.loaded == 'always' ? scene.embed : '') + '" xsrc="' + scene.embed + '"></iframe>';
 				}
 				if (scene.audio) {
 					var loop = scene.loop ? 'loop' : '';
@@ -94,8 +94,14 @@
 				var e = $('#'+id);
 				e.css('z-index', e.css('z-index')-1);
 				e.animate({opacity: 0}, scene.fadeout);
+				var f = e.find('iframe');
+				if (f && scene.loaded == 'visible') {
+					f.attr('src', '');
+				}
 				var a = e.find('audio');
-				a.animate({volume: 0}, scene.fadeout);
+				if (a) {
+					a.animate({volume: 0}, scene.fadeout);
+				}
 				console.log('fading out ' + id)
 			}
 
@@ -106,11 +112,17 @@
 				var scene = findScene(id);
 				var e = $('#'+id);
 				e.animate({opacity: 1}, scene.fadein)
+				var f = e.find('iframe');
+				if (f && scene.loaded == 'visible') {
+					f.attr('src', f.attr('xsrc'));
+				}
 				var a = e.find('audio');
-				a.prop('volume', 0);
-				a.prop('currentTime', 0);
-				a.animate({volume: (scene.volume / 100)}, scene.fadein);
-				a.trigger('play');
+				if (a) {
+					a.prop('volume', 0);
+					a.prop('currentTime', 0);
+					a.animate({volume: (scene.volume / 100)}, scene.fadein);
+					a.trigger('play');
+				}
 				console.log('fading in ' + id)
 			}
 
