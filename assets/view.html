@@ -68,7 +68,7 @@
 				}
 				var content = '';
 				if (scene.embed) {
-					content += '<iframe src="' + (scene.loaded == 'always' ? scene.embed : '') + '" xsrc="' + scene.embed + '"></iframe>';
+					content += '<iframe src="' + (scene.loaded == 'always' ? scene.embed : '') + '"></iframe>';
 				}
 				if (scene.audio) {
 					var loop = scene.loop ? 'loop' : '';
@@ -137,7 +137,7 @@
 
 				var f = e.find('iframe');
 				if (f && scene.loaded == 'visible') {
-					f.attr('src', f.attr('xsrc'));
+					f.attr('src', scene.embed);
 				}
 
 				var a = e.find('audio');
