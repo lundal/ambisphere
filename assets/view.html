@@ -180,7 +180,7 @@
 				if (verbose) console.log(data);
 				setScenes(data.scenes);
 				setStack(data.stack);
-				setTimeout(pollState, 100);
+				setTimeout(pollState, 200);
 			}, 'json')
 			.fail(function() {
 				setTimeout(pollState, 3000);

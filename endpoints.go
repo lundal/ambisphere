@@ -54,17 +54,18 @@ func putState(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
 func pollState(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	id := p.ByName("id")
-	state := readState(id)
+	state := ""
 
 	body, _ := ioutil.ReadAll(r.Body)
 	knownState := string(body)
 
 	for i := 0; i < 300; i++ {
-		if readState(id) != knownState {
+		state = readState(id)
+		if state != knownState {
 			fmt.Fprint(w, state)
 			return
 		}
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(200 * time.Millisecond)
 	}
 
 	fmt.Fprint(w, state)
