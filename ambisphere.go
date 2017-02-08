@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"os"
+
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -31,14 +33,7 @@ func limitBody(handler httprouter.Handle) httprouter.Handle {
 	}
 }
 
-func main() {
-	var port int
-	var db string
-
-	flag.IntVar(&port, "port", 4800, "Port to serve webinterface on")
-	flag.StringVar(&db, "db", "ambisphere.db", "Database file")
-	flag.Parse()
-
+func run(port int, db string) {
 	initDb(db)
 
 	router := httprouter.New()
@@ -54,4 +49,34 @@ func main() {
 	router.POST("/api/state/:id", validateID(limitBody(pollState)))
 
 	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(port), router))
+}
+
+var (
+	version   string
+	buildtime string
+)
+
+func main() {
+	workdir, _ := os.Getwd()
+
+	port := flag.Int("port", 4800, "Port to serve webinterface on")
+	db := flag.String("db", "ambisphere.db", "Database file")
+	flag.Parse()
+
+	log.Println(`     _              _     _           _                   `)
+	log.Println(`    / \   _ __ ___ | |__ (_)___ _ __ | |__   ___ _ __ ___ `)
+	log.Println(`   / _ \ | '_ ' _ \| '_ \| / __| '_ \| '_ \ / _ \ '__/ _ \`)
+	log.Println(`  / ___ \| | | | | | |_) | \__ \ |_) | | | |  __/ | |  __/`)
+	log.Println(` /_/   \_\_| |_| |_|_.__/|_|___/ .__/|_| |_|\___|_|  \___|`)
+	log.Println(`                               |_|                        `)
+	log.Println("--------------------------------------------------------------------------------")
+	log.Printf("Version: %s", version)
+	log.Printf("Build Time: %s", buildtime)
+	log.Printf("Work Dir: %s", workdir)
+	log.Println("--------------------------------------------------------------------------------")
+	log.Printf("Port: %d", *port)
+	log.Printf("Database: %s", *db)
+	log.Println("--------------------------------------------------------------------------------")
+
+	run(*port, *db)
 }
