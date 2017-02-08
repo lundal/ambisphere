@@ -77,7 +77,11 @@ var SceneThumbnail = React.createClass({
 		scene: React.PropTypes.object.isRequired,
 	},
 	onSelect: function(e) {
-		state.stack.pop();
+		if (state.stack.contains(this.props.scene.id)) {
+			state.stack.remove(this.props.scene.id);
+		} else {
+			state.stack.pop();
+		}
 		state.stack.push(this.props.scene.id);
 		stateUpdated();
 	},
@@ -407,6 +411,10 @@ Array.prototype.removeAt = function(index) {
 
 Array.prototype.insertAt = function(index, item) {
 	this.splice(index, 0, item);
+};
+
+Array.prototype.contains = function(item) {
+	return this.indexOf(item) > -1;
 };
 
 Array.prototype.remove = function(item) {
