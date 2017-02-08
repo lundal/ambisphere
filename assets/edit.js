@@ -4,6 +4,8 @@ var state = {
 	stack: [],
 	editScene: null,
 	editVisible: false,
+	dragScene: null,
+	dragStack: null,
 };
 
 // App
@@ -97,6 +99,21 @@ var SceneThumbnail = React.createClass({
 		state.stack.push(this.props.scene.id);
 		stateUpdated();
 	},
+	onDragStart: function(e) {
+		state.dragScene = this.props.scene;
+	},
+	onDragOver: function(e) {
+		if (state.dragScene != null && state.dragScene != this.props.scene) {
+			fromIndex = state.scenes.indexOf(state.dragScene);
+			toIndex = state.scenes.indexOf(this.props.scene);
+			state.scenes.removeAt(fromIndex);
+			state.scenes.insertAt(toIndex, state.dragScene);
+			stateUpdated();
+		}
+	},
+	onDragEnd: function(e) {
+		state.dragScene = null;
+	},
 	render: function() {
 		var scene = this.props.scene;
 		var imageStyle = {
@@ -105,7 +122,7 @@ var SceneThumbnail = React.createClass({
 			backgroundSize: scene.size,
 		};
 		return (
-			React.createElement('div', {className: 'scene card clickable', onClick: this.onSelect},
+			React.createElement('div', {className: 'scene card clickable', onClick: this.onSelect, draggable: true, onDragStart: this.onDragStart, onDragOver: this.onDragOver, onDragEnd: this.onDragEnd},
 				React.createElement('div', {className: 'image fill', style: imageStyle}),
 				scene.embed ? React.createElement('div', {className: 'embed fill'},
 					React.createElement('i', {className: 'fa fa-code'})
@@ -160,6 +177,21 @@ var StackThumbnail = React.createClass({
 		state.stack.pushUp(this.props.scene.id);
 		stateUpdated();
 	},
+	onDragStart: function(e) {
+		state.dragStack = this.props.scene.id;
+	},
+	onDragOver: function(e) {
+		if (state.dragStack != null && state.dragStack != this.props.scene.id) {
+			fromIndex = state.stack.indexOf(state.dragStack);
+			toIndex = state.stack.indexOf(this.props.scene.id);
+			state.stack.removeAt(fromIndex);
+			state.stack.insertAt(toIndex, state.dragStack);
+			stateUpdated();
+		}
+	},
+	onDragEnd: function(e) {
+		state.dragStack = null;
+	},
 	render: function() {
 		var scene = this.props.scene;
 		var imageStyle = {
@@ -168,7 +200,7 @@ var StackThumbnail = React.createClass({
 			backgroundSize: scene.size,
 		};
 		return (
-			React.createElement('div', {className: 'scene card clickable'},
+			React.createElement('div', {className: 'scene card clickable', draggable: true, onDragStart: this.onDragStart, onDragOver: this.onDragOver, onDragEnd: this.onDragEnd},
 				React.createElement('div', {className: 'image fill', style: imageStyle}),
 				scene.embed ? React.createElement('div', {className: 'embed fill'},
 					React.createElement('i', {className: 'fa fa-code'})
@@ -384,6 +416,14 @@ var SelectBox = React.createClass({
 });
 
 // Array extensions
+
+Array.prototype.removeAt = function(index) {
+	this.splice(index, 1);
+};
+
+Array.prototype.insertAt = function(index, item) {
+	this.splice(index, 0, item);
+};
 
 Array.prototype.remove = function(item) {
 	var index = this.indexOf(item);
