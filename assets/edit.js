@@ -167,16 +167,6 @@ var StackThumbnail = React.createClass({
 		state.stack.remove(this.props.scene.id);
 		stateUpdated();
 	},
-	onLower: function(e) {
-		e.stopPropagation();
-		state.stack.pushDown(this.props.scene.id);
-		stateUpdated();
-	},
-	onRaise: function(e) {
-		e.stopPropagation();
-		state.stack.pushUp(this.props.scene.id);
-		stateUpdated();
-	},
 	onDragStart: function(e) {
 		state.dragStack = this.props.scene.id;
 	},
@@ -208,12 +198,6 @@ var StackThumbnail = React.createClass({
 				React.createElement('div', {className: 'title bottom'}, format(scene.title, 'Unnamed', 20)),
 				React.createElement('button', {className: 'circle micro red topright', onClick: this.onRemove},
 					React.createElement('i', {className: 'fa fa-times' })
-				),
-				React.createElement('button', {className: 'circle micro orange bottomleft', onClick: this.onLower},
-					React.createElement('i', {className: 'fa fa-chevron-circle-left'})
-				),
-				React.createElement('button', {className: 'circle micro orange bottomright', onClick: this.onRaise},
-					React.createElement('i', {className: 'fa fa-chevron-circle-right'})
 				)
 			)
 		)
