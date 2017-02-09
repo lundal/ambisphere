@@ -1,6 +1,6 @@
 tag=$(shell git describe --tags --exact 2> /dev/null)
 commit=$(shell git rev-parse HEAD)
-version=$(if $(tag),$(tag),DEV-$(commit))
+version=$(if $(tag),$(tag),$(commit))
 now=$(shell date -Is)
 
 ambisphere:
